@@ -10,6 +10,7 @@ Eigen::MatrixXd compute_cors_cpp(const Eigen::Map<Eigen::MatrixXd> & X, const Ei
     using Eigen::VectorXd;
 
     int p = X.cols();
+    int n = X.rows();
 
     MatrixXd cormat(MatrixXd::Zero(p, p));
 
@@ -17,7 +18,13 @@ Eigen::MatrixXd compute_cors_cpp(const Eigen::Map<Eigen::MatrixXd> & X, const Ei
     {
         for (int j = i + 1; j < p; ++j)
         {
-            cormat(i,j) = Y.dot((X.col(i).array() * X.col(j).array()).matrix() );
+            VectorXd interaction = (X.col(i).array() * X.col(j).array()).matrix();
+
+            interaction.array() -= interaction.mean();
+
+            double sum_square_norm = std::sqrt((interaction.array().square()).matrix().sum() / double(n - 1));
+
+            cormat(i,j) = Y.dot( interaction ) / sum_square_norm;
         }
     }
 
