@@ -25,3 +25,6 @@ int_idx <- filter_top(cormat, k = 50)
 
 int_mat <- construct_ints(x, ints)
 }
+\seealso{
+\code{\link[intscreen]{filter_top}}, \code{\link[intscreen]{compute_cors}}, and \code{\link[intscreen]{intscreen}}
+}

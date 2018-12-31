@@ -7,10 +7,13 @@
 filter_top(cormat, k = 50)
 }
 \arguments{
-\item{cormat}{correlation matrix returned by \code{compute_cors}}
+\item{cormat}{correlation matrix returned by \code{\link[intscreen]{compute_cors}}}
 
 \item{k}{integer number of top interactions to screen}
 }
 \description{
 This function filters top interactions using correlation matrix
+}
+\seealso{
+\code{\link[intscreen]{compute_cors}}, \code{\link[intscreen]{construct_ints}}, and \code{\link[intscreen]{intscreen}}
 }

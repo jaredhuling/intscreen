@@ -2,8 +2,9 @@
 
 export(compute_cors)
 export(construct_ints)
+export(cv_intscreen)
 export(filter_top)
-export(screen_ints)
+export(intscreen)
 import(stats)
 importFrom(Rcpp,evalCpp)
 useDynLib(intscreen, .registration = TRUE)

@@ -14,3 +14,6 @@ compute_cors(x, y)
 \description{
 This function computes an unscaled correlation matrix
 }
+\seealso{
+\code{\link[intscreen]{filter_top}}, \code{\link[intscreen]{construct_ints}}, and \code{\link[intscreen]{intscreen}}
+}
