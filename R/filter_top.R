@@ -91,7 +91,7 @@ construct_ints <- function(x, top_ints)
 #' head(int_mat)
 screen_ints <- function(x, y, k = 10)
 {
-    cormat <- compute_cors(x, y)
+    cormat <- compute_cors(scale(x), y)
 
     int_idx <- filter_top(cormat, k = k)
 
