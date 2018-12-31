@@ -58,6 +58,15 @@ construct_ints <- function(x, top_ints)
 {
     cnames <- colnames(x)
 
+    stopifnot(is.matrix(top_ints))
+
+    stopifnot(ncol(top_ints) == 2)
+
+    if (mode(top_ints) != "integer")
+    {
+        mode(top_ints) <- "integer"
+    }
+
     if (is.null(cnames))
     {
         cnames <- paste0("X", 1:ncol(x))
@@ -100,11 +109,16 @@ intscreen <- function(x, y, k = 10)
 }
 
 
-#' all computations for interaction screening
-#' @description This function does all computations for interaction screening
+#' Cross validation interaction screening
+#' @description This function implements CV interaction screening
 #' @param x matrix of predictors
 #' @param y vector of observations
 #' @param k integer number of top interactions to screen
+#' @param nsplits integer number of cross validation splits to run. defaults to 10
+#' @param train.frac fraction of data used for each split. defaults to 0.75
+#' @param fraction.in.thresh fraction of times across the \code{nsplits} CV splits each
+#' interaction is required in the top \code{k} interactions in order to be selected
+#' @param verbose logical value, whether to print progress of the CV splitting
 #' @export
 #' @examples
 #'
@@ -121,7 +135,8 @@ intscreen <- function(x, y, k = 10)
 #' ints <- cv_intscreen(x, y, k = 50, nsplits = 15, fraction.in.thresh = 1)
 #'
 #' ints$int_idx
-cv_intscreen <- function(x, y, k = 100, nsplits = 10, train.frac = 0.75, fraction.in.thresh = 1)
+cv_intscreen <- function(x, y, k = 100, nsplits = 10, train.frac = 0.75, fraction.in.thresh = 1,
+                         verbose = FALSE)
 {
     intlist <- vector(mode = "list", length = nsplits)
 
@@ -132,6 +147,10 @@ cv_intscreen <- function(x, y, k = 100, nsplits = 10, train.frac = 0.75, fractio
         s_idx   <- sample.int(n, floor(n * train.frac))
         cormat  <- compute_cors(x[s_idx,,drop=FALSE], y[s_idx])
         intlist[[s]] <- filter_top(cormat, k = k)
+        if (verbose)
+        {
+            cat("Split number:", s, "\n")
+        }
     }
 
     ## the first index (ie first column of matrix returned by filter_top)
