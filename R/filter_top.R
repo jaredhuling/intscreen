@@ -32,7 +32,7 @@ filter_top <- function(cormat, k = 50)
 #' @export
 compute_cors <- function(x, y)
 {
-    compute_cors_cpp(X = x, Y = y)
+    compute_cors_cpp(X = x, Y = scale(y))
 }
 
 
@@ -91,7 +91,7 @@ construct_ints <- function(x, top_ints)
 #' head(int_mat)
 screen_ints <- function(x, y, k = 10)
 {
-    cormat <- compute_cors(x, y) / NROW(x)
+    cormat <- compute_cors(x, y)
 
     int_idx <- filter_top(cormat, k = k)
 

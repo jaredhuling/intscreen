@@ -24,7 +24,7 @@ Eigen::MatrixXd compute_cors_cpp(const Eigen::Map<Eigen::MatrixXd> & X, const Ei
 
             double sum_square_norm = std::sqrt((interaction.array().square()).matrix().sum() / double(n - 1));
 
-            cormat(i,j) = Y.dot( interaction ) / sum_square_norm;
+            cormat(i,j) = Y.dot( interaction ) / (sum_square_norm * double(n));
         }
     }
 
