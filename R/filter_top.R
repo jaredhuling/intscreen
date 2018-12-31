@@ -60,7 +60,7 @@ construct_ints <- function(x, top_ints)
         cnames <- paste0("X", 1:ncol(x))
     }
 
-    intnames <- paste(cnames[ints[,1]], cnames[ints[,2]], sep = ":")
+    intnames <- paste(cnames[top_ints[,1]], cnames[top_ints[,2]], sep = ":")
 
     int_mat <- construct_ints_cpp(X = x, whichints = top_ints)
 
@@ -95,7 +95,7 @@ screen_ints <- function(x, y, k = 10)
 
     int_idx <- filter_top(cormat, k = k)
 
-    int_mat <- construct_ints(x, ints)
+    int_mat <- construct_ints(x, int_idx)
 
     list(int_mat = int_mat, int_idx = int_idx)
 }
