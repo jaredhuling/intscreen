@@ -38,10 +38,10 @@ Eigen::MatrixXd construct_ints_cpp(const Eigen::Map<Eigen::MatrixXd> & X, const 
 
     for (int i = 0; i < num_ints; ++i)
     {
-        int var1 = whichints(i,0);
-        int var2 = whichints(i,1);
+        int var1 = whichints(i,0) - 1;
+        int var2 = whichints(i,1) - 1;
 
-        if (var1 > p || var2 > p)
+        if (var1 >= p || var2 >= p)
         {
             stop("invalid variable index");
         }
