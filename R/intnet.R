@@ -72,7 +72,7 @@ intnet <- function(x, y, which.cols = 1:ncol(x),
     obj
 }
 
-
+## the following code is modified from glmnet:
 
 #' Cross validation interaction screening
 #' @description This function implements CV interaction screening
