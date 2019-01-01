@@ -167,7 +167,7 @@ cv_intscreen <- function(x, y, k = 100, nsplits = 10, train.frac = 0.75, fractio
             cormat  <- compute_cors(x[s_idx,,drop=FALSE], y[s_idx])
         } else
         {
-            cormat  <- compute_cors(x[s_idx,,drop=FALSE], y[s_idx], modifider[s_idx])
+            cormat  <- compute_cors(x[s_idx,,drop=FALSE], y[s_idx], modifier[s_idx])
         }
 
         intlist[[s]] <- filter_top(cormat, k = k)

@@ -4,7 +4,7 @@
 \alias{intnet}
 \title{Cross validation interaction screening}
 \usage{
-intnet(x, y, which.cols = 1:ncol(x), k = 100, nsplits = 10,
+intnet(x, y, which.cols = 1:ncol(x), k = 75, nsplits = 10,
   train.frac = 0.75, fraction.in.thresh = 1, verbose = FALSE,
   modifier = NULL, ...)
 }

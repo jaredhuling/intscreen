@@ -25,7 +25,7 @@
 #'
 #' plot(intmod)
 intnet <- function(x, y, which.cols = 1:ncol(x),
-                   k = 100, nsplits = 10,
+                   k = 75, nsplits = 10,
                    train.frac = 0.75, fraction.in.thresh = 1,
                    verbose = FALSE,
                    modifier = NULL,
@@ -149,6 +149,8 @@ cv.intnet <- function (x, y, weights, offset = NULL, lambda = NULL, type.measure
         instr_dots <- dots[intscr_args %in% names(dots)]
     }
 
+    print(instr_dots)
+
     glmnet.object = intnet(x, y, weights = weights,
                            offset = offset,
                            modifier = modifier,
@@ -184,10 +186,18 @@ cv.intnet <- function (x, y, weights, offset = NULL, lambda = NULL, type.measure
             if (is.offset)
                 offset_sub = as.matrix(offset)[!which, ]
             else offset_sub = NULL
-            intnet(x[!which, , drop = FALSE], y_sub, lambda = lambda,
-                   modifier = modifier[!which],
-                   offset = offset_sub, weights = weights[!which],
-                   ...)
+            if (is.null(modifier))
+            {
+                return(intnet(x[!which, , drop = FALSE], y_sub, lambda = lambda,
+                              offset = offset_sub, weights = weights[!which],
+                              ...))
+            } else
+            {
+                return(intnet(x[!which, , drop = FALSE], y_sub, lambda = lambda,
+                              modifier = modifier[!which],
+                              offset = offset_sub, weights = weights[!which],
+                              ...))
+            }
         }
     }
     else {
@@ -199,10 +209,18 @@ cv.intnet <- function (x, y, weights, offset = NULL, lambda = NULL, type.measure
             if (is.offset)
                 offset_sub = as.matrix(offset)[!which, ]
             else offset_sub = NULL
-            outlist[[i]] = intnet(x[!which, , drop = FALSE],
-                                  y_sub, lambda = lambda, offset = offset_sub,
-                                  modifier = modifier[!which],
-                                  weights = weights[!which], ...)
+            if (is.null(modifier))
+            {
+                outlist[[i]] = intnet(x[!which, , drop = FALSE],
+                                      y_sub, lambda = lambda, offset = offset_sub,
+                                      weights = weights[!which], ...)
+            } else
+            {
+                outlist[[i]] = intnet(x[!which, , drop = FALSE],
+                                      y_sub, lambda = lambda, offset = offset_sub,
+                                      modifier = modifier[!which],
+                                      weights = weights[!which], ...)
+            }
         }
     }
     fun = paste("cv", subclass, sep = ".")
