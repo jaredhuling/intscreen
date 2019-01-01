@@ -5,7 +5,7 @@
 \title{Cross validation interaction screening}
 \usage{
 cv_intscreen(x, y, k = 100, nsplits = 10, train.frac = 0.75,
-  fraction.in.thresh = 1, verbose = FALSE)
+  fraction.in.thresh = 1, verbose = FALSE, modifier = NULL)
 }
 \arguments{
 \item{x}{matrix of predictors}
@@ -22,6 +22,8 @@ cv_intscreen(x, y, k = 100, nsplits = 10, train.frac = 0.75,
 interaction is required in the top \code{k} interactions in order to be selected}
 
 \item{verbose}{logical value, whether to print progress of the CV splitting}
+
+\item{modifier}{effect modifier}
 }
 \description{
 This function implements CV interaction screening

@@ -10,6 +10,7 @@
 #' @param train.frac fraction of data used for each split. defaults to 0.75
 #' @param fraction.in.thresh fraction of times across the \code{nsplits} CV splits each
 #' interaction is required in the top \code{k} interactions in order to be selected
+#' @param modifier effect modifier
 #' @param ... arguments to be passed to \code{\link[glmnet]{glmnet}}
 #' @export
 #' @examples
@@ -26,7 +27,9 @@
 intnet <- function(x, y, which.cols = 1:ncol(x),
                    k = 100, nsplits = 10,
                    train.frac = 0.75, fraction.in.thresh = 1,
-                   verbose = FALSE, ...)
+                   verbose = FALSE,
+                   modifier = NULL,
+                   ...)
 {
     cnames <- colnames(x)
 
@@ -54,18 +57,38 @@ intnet <- function(x, y, which.cols = 1:ncol(x),
         stop("which.cols should contain values no smaller than 1")
     }
 
+    if (is.null(modifier))
+    {
+        modifier <- rep(1, nrow(x))
+    }
+
     ints <- cv_intscreen(x = x[,which.cols,drop=FALSE], y = y, k = k,
                          nsplits = nsplits, train.frac = train.frac,
-                         fraction.in.thresh = fraction.in.thresh, verbose = FALSE)
+                         fraction.in.thresh = fraction.in.thresh, verbose = FALSE,
+                         modifier = modifier)
 
-    if (!is.null(ints$int_mat))
+    if (is.null(modifier))
     {
-        x_mm <- cbind(x, ints$int_mat)
-        obj  <- glmnet(x = x_mm, y = y, ...)
+        if (!is.null(ints$int_mat))
+        {
+            x_mm <- cbind(x, ints$int_mat)
+            obj  <- glmnet(x = x_mm, y = y, ...)
+        } else
+        {
+            obj  <- glmnet(x = x, y = y, ...)
+        }
     } else
     {
-        obj  <- glmnet(x = x, y = y, ...)
+        if (!is.null(ints$int_mat))
+        {
+            x_mm <- modifier * cbind(x, ints$int_mat)
+            obj  <- glmnet(x = x_mm, y = y, ...)
+        } else
+        {
+            obj  <- glmnet(x = modifier * x, y = y, ...)
+        }
     }
+
     obj$ints <- ints
     class(obj)[class(obj) == "glmnet"] <- "intnet"
     class(obj) <- c(class(obj), "glmnet")
@@ -77,6 +100,7 @@ intnet <- function(x, y, which.cols = 1:ncol(x),
 #' Cross validation interaction screening
 #' @description This function implements CV interaction screening
 #' @param ... other arguments to be passed to \code{\link[intscreen]{intnet}}
+#' @param modifier effect modifier
 #' @inheritParams glmnet::cv.glmnet
 #' @export
 #' @import glmnet
@@ -96,7 +120,7 @@ intnet <- function(x, y, which.cols = 1:ncol(x),
 #' cfs[cfs != 0,,drop=FALSE]
 cv.intnet <- function (x, y, weights, offset = NULL, lambda = NULL, type.measure = c("mse",
                                                                                      "deviance", "class", "auc", "mae"), nfolds = 10, foldid,
-                       grouped = TRUE, keep = FALSE, parallel = FALSE, ...)
+                       grouped = TRUE, keep = FALSE, parallel = FALSE, modifier = NULL, ...)
 {
     if (missing(type.measure))
         type.measure = "default"
@@ -125,7 +149,9 @@ cv.intnet <- function (x, y, weights, offset = NULL, lambda = NULL, type.measure
         instr_dots <- dots[intscr_args %in% names(dots)]
     }
 
-    glmnet.object = intnet(x, y, weights = weights, offset = offset,
+    glmnet.object = intnet(x, y, weights = weights,
+                           offset = offset,
+                           modifier = modifier,
                            lambda = lambda, ...)
     glmnet.object$call = glmnet.call
     subclass=class(glmnet.object)[[1]]
@@ -159,6 +185,7 @@ cv.intnet <- function (x, y, weights, offset = NULL, lambda = NULL, type.measure
                 offset_sub = as.matrix(offset)[!which, ]
             else offset_sub = NULL
             intnet(x[!which, , drop = FALSE], y_sub, lambda = lambda,
+                   modifier = modifier[!which],
                    offset = offset_sub, weights = weights[!which],
                    ...)
         }
@@ -174,6 +201,7 @@ cv.intnet <- function (x, y, weights, offset = NULL, lambda = NULL, type.measure
             else offset_sub = NULL
             outlist[[i]] = intnet(x[!which, , drop = FALSE],
                                   y_sub, lambda = lambda, offset = offset_sub,
+                                  modifier = modifier[!which],
                                   weights = weights[!which], ...)
         }
     }

@@ -4,12 +4,14 @@
 \alias{compute_cors}
 \title{computes unscaled correlation matrix}
 \usage{
-compute_cors(x, y)
+compute_cors(x, y, modifier = NULL)
 }
 \arguments{
 \item{x}{matrix of predictors}
 
 \item{y}{vector of observations}
+
+\item{modifier}{effect modifier}
 }
 \description{
 This function computes an unscaled correlation matrix

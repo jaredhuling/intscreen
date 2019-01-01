@@ -5,7 +5,8 @@
 \title{Cross validation interaction screening}
 \usage{
 intnet(x, y, which.cols = 1:ncol(x), k = 100, nsplits = 10,
-  train.frac = 0.75, fraction.in.thresh = 1, verbose = FALSE, ...)
+  train.frac = 0.75, fraction.in.thresh = 1, verbose = FALSE,
+  modifier = NULL, ...)
 }
 \arguments{
 \item{x}{matrix of predictors}
@@ -22,6 +23,8 @@ intnet(x, y, which.cols = 1:ncol(x), k = 100, nsplits = 10,
 
 \item{fraction.in.thresh}{fraction of times across the \code{nsplits} CV splits each
 interaction is required in the top \code{k} interactions in order to be selected}
+
+\item{modifier}{effect modifier}
 
 \item{...}{arguments to be passed to \code{\link[glmnet]{glmnet}}}
 }

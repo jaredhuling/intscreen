@@ -7,7 +7,7 @@
 cv.intnet(x, y, weights, offset = NULL, lambda = NULL,
   type.measure = c("mse", "deviance", "class", "auc", "mae"),
   nfolds = 10, foldid, grouped = TRUE, keep = FALSE,
-  parallel = FALSE, ...)
+  parallel = FALSE, modifier = NULL, ...)
 }
 \arguments{
 \item{x}{\code{x} matrix as in \code{glmnet}.}
@@ -65,6 +65,8 @@ cv.intnet(x, y, weights, offset = NULL, lambda = NULL,
 \item{parallel}{If \code{TRUE}, use parallel \code{foreach} to fit each fold.
       Must register parallel before hand, such as \code{doMC} or others.
     See the example below.}
+
+\item{modifier}{effect modifier}
 
 \item{...}{other arguments to be passed to \code{\link[intscreen]{intnet}}}
 }

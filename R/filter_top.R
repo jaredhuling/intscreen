@@ -25,17 +25,24 @@ filter_top <- function(cormat, k = 50)
 }
 
 
-
 #' computes unscaled correlation matrix
 #' @description This function computes an unscaled correlation matrix
 #' @param x matrix of predictors
 #' @param y vector of observations
+#' @param modifier effect modifier
 #' @seealso \code{\link[intscreen]{filter_top}}, \code{\link[intscreen]{construct_ints}}, and \code{\link[intscreen]{intscreen}}
 #' @export
-compute_cors <- function(x, y)
+compute_cors <- function(x, y, modifier = NULL)
 {
-    compute_cors_cpp(X = x, Y = scale(y))
+    if (is.null(modifier))
+    {
+        return(compute_cors_cpp(X = x, Y = scale(y)))
+    } else
+    {
+        return(compute_cors_mod_cpp(X = x, Y = scale(y), mod = modifier))
+    }
 }
+
 
 
 #' constructs selected interactions
@@ -88,6 +95,7 @@ construct_ints <- function(x, top_ints)
 #' @param x matrix of predictors
 #' @param y vector of observations
 #' @param k integer number of top interactions to screen
+#' @param modifier effect modifier
 #' @export
 #' @examples
 #'
@@ -97,9 +105,9 @@ construct_ints <- function(x, top_ints)
 #' ints <- intscreen(x, y, k = 12)
 #'
 #' str(ints)
-intscreen <- function(x, y, k = 10)
+intscreen <- function(x, y, k = 10, modifier = NULL)
 {
-    cormat <- compute_cors(x, y)
+    cormat <- compute_cors(x, y, modifier)
 
     int_idx <- filter_top(cormat, k = k)
 
@@ -119,6 +127,7 @@ intscreen <- function(x, y, k = 10)
 #' @param fraction.in.thresh fraction of times across the \code{nsplits} CV splits each
 #' interaction is required in the top \code{k} interactions in order to be selected
 #' @param verbose logical value, whether to print progress of the CV splitting
+#' @param modifier effect modifier
 #' @export
 #' @examples
 #'
@@ -136,7 +145,7 @@ intscreen <- function(x, y, k = 10)
 #'
 #' ints$int_idx
 cv_intscreen <- function(x, y, k = 100, nsplits = 10, train.frac = 0.75, fraction.in.thresh = 1,
-                         verbose = FALSE)
+                         verbose = FALSE, modifier = NULL)
 {
     intlist <- vector(mode = "list", length = nsplits)
 
@@ -145,7 +154,15 @@ cv_intscreen <- function(x, y, k = 100, nsplits = 10, train.frac = 0.75, fractio
     for (s in 1:nsplits)
     {
         s_idx   <- sample.int(n, floor(n * train.frac))
-        cormat  <- compute_cors(x[s_idx,,drop=FALSE], y[s_idx])
+
+        if (is.null(modifier))
+        {
+            cormat  <- compute_cors(x[s_idx,,drop=FALSE], y[s_idx])
+        } else
+        {
+            cormat  <- compute_cors(x[s_idx,,drop=FALSE], y[s_idx], modifider[s_idx])
+        }
+
         intlist[[s]] <- filter_top(cormat, k = k)
         if (verbose)
         {

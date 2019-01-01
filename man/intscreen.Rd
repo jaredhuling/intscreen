@@ -4,7 +4,7 @@
 \alias{intscreen}
 \title{all computations for interaction screening}
 \usage{
-intscreen(x, y, k = 10)
+intscreen(x, y, k = 10, modifier = NULL)
 }
 \arguments{
 \item{x}{matrix of predictors}
@@ -12,6 +12,8 @@ intscreen(x, y, k = 10)
 \item{y}{vector of observations}
 
 \item{k}{integer number of top interactions to screen}
+
+\item{modifier}{effect modifier}
 }
 \description{
 This function does all computations for interaction screening
