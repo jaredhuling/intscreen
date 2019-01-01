@@ -4,13 +4,15 @@
 \alias{intnet}
 \title{Cross validation interaction screening}
 \usage{
-intnet(x, y, k = 100, nsplits = 10, train.frac = 0.75,
-  fraction.in.thresh = 1, verbose = FALSE, ...)
+intnet(x, y, which.cols = 1:ncol(x), k = 100, nsplits = 10,
+  train.frac = 0.75, fraction.in.thresh = 1, verbose = FALSE, ...)
 }
 \arguments{
 \item{x}{matrix of predictors}
 
 \item{y}{vector of observations}
+
+\item{which.cols}{integer vector indicating which columns of \code{x} to check for interactions}
 
 \item{k}{integer number of top interactions to screen}
 

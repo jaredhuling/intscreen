@@ -4,6 +4,7 @@
 #' @description This function implements CV interaction screening
 #' @param x matrix of predictors
 #' @param y vector of observations
+#' @param which.cols integer vector indicating which columns of \code{x} to check for interactions
 #' @param k integer number of top interactions to screen
 #' @param nsplits integer number of cross validation splits to run. defaults to 10
 #' @param train.frac fraction of data used for each split. defaults to 0.75
@@ -22,7 +23,9 @@
 #' intmod <- intnet(x, y, k = 50, nsplits = 15, fraction.in.thresh = 1)
 #'
 #' plot(intmod)
-intnet <- function(x, y, k = 100, nsplits = 10, train.frac = 0.75, fraction.in.thresh = 1,
+intnet <- function(x, y, which.cols = 1:ncol(x),
+                   k = 100, nsplits = 10,
+                   train.frac = 0.75, fraction.in.thresh = 1,
                    verbose = FALSE, ...)
 {
     cnames <- colnames(x)
@@ -33,7 +36,26 @@ intnet <- function(x, y, k = 100, nsplits = 10, train.frac = 0.75, fraction.in.t
         colnames(x) <- cnames
     }
 
-    ints <- cv_intscreen(x = x, y = y, k = k, nsplits = nsplits, train.frac = train.frac,
+    if (length(which.cols) < 2)
+    {
+        stop("which.cols must be a vector of at least length 2")
+    } else
+    {
+        which.cols <- as.integer(which.cols)
+    }
+
+    if (max(which.cols) > ncol(x))
+    {
+        stop("which.cols should contain values no larger than the number of columns in x")
+    }
+
+    if (min(which.cols) < 1)
+    {
+        stop("which.cols should contain values no smaller than 1")
+    }
+
+    ints <- cv_intscreen(x = x[,which.cols,drop=FALSE], y = y, k = k,
+                         nsplits = nsplits, train.frac = train.frac,
                          fraction.in.thresh = fraction.in.thresh, verbose = FALSE)
 
     if (!is.null(ints$int_mat))
