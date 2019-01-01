@@ -49,6 +49,7 @@ compute_cors <- function(x, y, modifier = NULL)
 #' @description This function constructs interaction terms
 #' @param x matrix of predictors
 #' @param top_ints k x 2 integer matrix of interaction terms
+#' @param modifier effect modifier
 #' @seealso \code{\link[intscreen]{filter_top}}, \code{\link[intscreen]{compute_cors}}, and \code{\link[intscreen]{intscreen}}
 #' @export
 #' @examples
@@ -61,7 +62,7 @@ compute_cors <- function(x, y, modifier = NULL)
 #' int_idx <- filter_top(cormat, k = 50)
 #'
 #' int_mat <- construct_ints(x, ints)
-construct_ints <- function(x, top_ints)
+construct_ints <- function(x, top_ints, modifier = NULL)
 {
     cnames <- colnames(x)
 
@@ -81,7 +82,13 @@ construct_ints <- function(x, top_ints)
 
     intnames <- paste(cnames[top_ints[,1]], cnames[top_ints[,2]], sep = ":")
 
-    int_mat <- construct_ints_cpp(X = x, whichints = top_ints)
+    if (is.null(modifier))
+    {
+        int_mat <- construct_ints_cpp(X = x, whichints = top_ints)
+    } else
+    {
+        int_mat <- modifier * construct_ints_cpp(X = x, whichints = top_ints)
+    }
 
     colnames(int_mat) <- intnames
 
@@ -111,7 +118,7 @@ intscreen <- function(x, y, k = 10, modifier = NULL)
 
     int_idx <- filter_top(cormat, k = k)
 
-    int_mat <- construct_ints(x, int_idx)
+    int_mat <- construct_ints(x, int_idx, modifier = modifier)
 
     list(int_mat = int_mat, int_idx = int_idx)
 }
@@ -193,7 +200,7 @@ cv_intscreen <- function(x, y, k = 100, nsplits = 10, train.frac = 0.75, fractio
         int_idx_final <- do.call(rbind, lapply(strsplit(ints_in_char, ":"), as.integer))
 
         colnames(int_idx_final) <- colnames(int_tall)
-        int_mat <- construct_ints(x, int_idx_final)
+        int_mat <- construct_ints(x, int_idx_final, modifier = modifier)
     }
 
     list(int_mat = int_mat, int_idx = int_idx_final)

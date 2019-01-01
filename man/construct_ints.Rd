@@ -4,12 +4,14 @@
 \alias{construct_ints}
 \title{constructs selected interactions}
 \usage{
-construct_ints(x, top_ints)
+construct_ints(x, top_ints, modifier = NULL)
 }
 \arguments{
 \item{x}{matrix of predictors}
 
 \item{top_ints}{k x 2 integer matrix of interaction terms}
+
+\item{modifier}{effect modifier}
 }
 \description{
 This function constructs interaction terms
