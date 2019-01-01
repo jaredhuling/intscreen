@@ -5,11 +5,11 @@
 #' @param x matrix of predictors
 #' @param y vector of observations
 #' @param which.cols integer vector indicating which columns of \code{x} to check for interactions
-#' @param k integer number of top interactions to screen
+#' @param nints integer number of top interactions to screen
 #' @param nsplits integer number of cross validation splits to run. defaults to 10
 #' @param train.frac fraction of data used for each split. defaults to 0.75
 #' @param fraction.in.thresh fraction of times across the \code{nsplits} CV splits each
-#' interaction is required in the top \code{k} interactions in order to be selected
+#' interaction is required in the top \code{nints} interactions in order to be selected
 #' @param modifier effect modifier
 #' @param ... arguments to be passed to \code{\link[glmnet]{glmnet}}
 #' @export
@@ -21,11 +21,11 @@
 #'
 #'
 #' ## require that each interaction be in the top 50 ints 100% of the 15 splits
-#' intmod <- intnet(x, y, k = 50, nsplits = 15, fraction.in.thresh = 1)
+#' intmod <- intnet(x, y, nints = 50, nsplits = 15, fraction.in.thresh = 1)
 #'
 #' plot(intmod)
 intnet <- function(x, y, which.cols = 1:ncol(x),
-                   k = 75, nsplits = 10,
+                   nints = 100, nsplits = 10,
                    train.frac = 0.75, fraction.in.thresh = 1,
                    verbose = FALSE,
                    modifier = NULL,
@@ -62,7 +62,7 @@ intnet <- function(x, y, which.cols = 1:ncol(x),
         modifier <- rep(1, nrow(x))
     }
 
-    ints <- cv_intscreen(x = x[,which.cols,drop=FALSE], y = y, k = k,
+    ints <- cv_intscreen(x = x[,which.cols,drop=FALSE], y = y, nints = nints,
                          nsplits = nsplits, train.frac = train.frac,
                          fraction.in.thresh = fraction.in.thresh, verbose = FALSE,
                          modifier = modifier)
@@ -112,14 +112,15 @@ intnet <- function(x, y, which.cols = 1:ncol(x),
 #'
 #'
 #' ## require that each interaction be in the top 50 ints 100% of the 15 splits
-#' intmod <- cv.intnet(x, y, k = 50, nsplits = 15, fraction.in.thresh = 1)
+#' intmod <- cv.intnet(x, y, nints = 50, nsplits = 15, fraction.in.thresh = 1)
 #'
 #' plot(intmod)
 #'
 #' cfs <- as.matrix(predict(intmod, type = "coef", s = "lambda.min"))
 #' cfs[cfs != 0,,drop=FALSE]
-cv.intnet <- function (x, y, weights, offset = NULL, lambda = NULL, type.measure = c("mse",
-                                                                                     "deviance", "class", "auc", "mae"), nfolds = 10, foldid,
+cv.intnet <- function (x, y, weights, offset = NULL, lambda = NULL,
+                       type.measure = c("mse", "deviance", "class", "auc", "mae"),
+                       nfolds = 10, foldid,
                        grouped = TRUE, keep = FALSE, parallel = FALSE, modifier = NULL, ...)
 {
     if (missing(type.measure))
@@ -148,8 +149,6 @@ cv.intnet <- function (x, y, weights, offset = NULL, lambda = NULL, type.measure
     {
         instr_dots <- dots[intscr_args %in% names(dots)]
     }
-
-    print(instr_dots)
 
     glmnet.object = intnet(x, y, weights = weights,
                            offset = offset,

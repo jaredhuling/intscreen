@@ -4,12 +4,12 @@
 \alias{filter_top}
 \title{filters top interactions using correlation matrix}
 \usage{
-filter_top(cormat, k = 50)
+filter_top(cormat, nints = 50)
 }
 \arguments{
 \item{cormat}{correlation matrix returned by \code{\link[intscreen]{compute_cors}}}
 
-\item{k}{integer number of top interactions to screen}
+\item{nints}{integer number of top interactions to screen}
 }
 \description{
 This function filters top interactions using correlation matrix

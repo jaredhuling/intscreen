@@ -81,7 +81,7 @@ y <- rnorm(100) + x[,1] * x[,2] * 0.5 - x[,3] * x[,4] * 0.5
 
 
 ## require that each interaction be in the top 50 ints 100\% of the 15 splits
-intmod <- cv.intnet(x, y, k = 50, nsplits = 15, fraction.in.thresh = 1)
+intmod <- cv.intnet(x, y, nints = 50, nsplits = 15, fraction.in.thresh = 1)
 
 plot(intmod)
 

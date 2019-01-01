@@ -4,7 +4,7 @@
 \alias{intnet}
 \title{Cross validation interaction screening}
 \usage{
-intnet(x, y, which.cols = 1:ncol(x), k = 75, nsplits = 10,
+intnet(x, y, which.cols = 1:ncol(x), nints = 100, nsplits = 10,
   train.frac = 0.75, fraction.in.thresh = 1, verbose = FALSE,
   modifier = NULL, ...)
 }
@@ -15,14 +15,14 @@ intnet(x, y, which.cols = 1:ncol(x), k = 75, nsplits = 10,
 
 \item{which.cols}{integer vector indicating which columns of \code{x} to check for interactions}
 
-\item{k}{integer number of top interactions to screen}
+\item{nints}{integer number of top interactions to screen}
 
 \item{nsplits}{integer number of cross validation splits to run. defaults to 10}
 
 \item{train.frac}{fraction of data used for each split. defaults to 0.75}
 
 \item{fraction.in.thresh}{fraction of times across the \code{nsplits} CV splits each
-interaction is required in the top \code{k} interactions in order to be selected}
+interaction is required in the top \code{nints} interactions in order to be selected}
 
 \item{modifier}{effect modifier}
 
@@ -39,7 +39,7 @@ y <- rnorm(100) + x[,1] * x[,2] * 0.5 - x[,3] * x[,4] * 0.5
 
 
 ## require that each interaction be in the top 50 ints 100\% of the 15 splits
-intmod <- intnet(x, y, k = 50, nsplits = 15, fraction.in.thresh = 1)
+intmod <- intnet(x, y, nints = 50, nsplits = 15, fraction.in.thresh = 1)
 
 plot(intmod)
 }

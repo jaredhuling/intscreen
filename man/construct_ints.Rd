@@ -9,7 +9,7 @@ construct_ints(x, top_ints, modifier = NULL)
 \arguments{
 \item{x}{matrix of predictors}
 
-\item{top_ints}{k x 2 integer matrix of interaction terms}
+\item{top_ints}{\code{nints} x 2 integer matrix of interaction terms}
 
 \item{modifier}{effect modifier}
 }
@@ -23,7 +23,7 @@ y <- rnorm(1000)
 
 cormat <- compute_cors(x, y)
 
-int_idx <- filter_top(cormat, k = 50)
+int_idx <- filter_top(cormat, nints = 50)
 
 int_mat <- construct_ints(x, ints)
 }

@@ -4,14 +4,14 @@
 \alias{intscreen}
 \title{all computations for interaction screening}
 \usage{
-intscreen(x, y, k = 10, modifier = NULL)
+intscreen(x, y, nints = 10, modifier = NULL)
 }
 \arguments{
 \item{x}{matrix of predictors}
 
 \item{y}{vector of observations}
 
-\item{k}{integer number of top interactions to screen}
+\item{nints}{integer number of top interactions to screen}
 
 \item{modifier}{effect modifier}
 }
@@ -23,7 +23,7 @@ This function does all computations for interaction screening
 x <- matrix(rnorm(1000 * 500), ncol = 500)
 y <- rnorm(1000)
 
-ints <- intscreen(x, y, k = 12)
+ints <- intscreen(x, y, nints = 12)
 
 str(ints)
 }

@@ -4,7 +4,7 @@
 \alias{cv_intscreen}
 \title{Cross validation interaction screening}
 \usage{
-cv_intscreen(x, y, k = 100, nsplits = 10, train.frac = 0.75,
+cv_intscreen(x, y, nints = 100, nsplits = 10, train.frac = 0.75,
   fraction.in.thresh = 1, verbose = FALSE, modifier = NULL)
 }
 \arguments{
@@ -12,7 +12,7 @@ cv_intscreen(x, y, k = 100, nsplits = 10, train.frac = 0.75,
 
 \item{y}{vector of observations}
 
-\item{k}{integer number of top interactions to screen}
+\item{nints}{integer number of top interactions to screen}
 
 \item{nsplits}{integer number of cross validation splits to run. defaults to 10}
 
@@ -35,12 +35,12 @@ x <- matrix(rnorm(100 * 350), ncol = 350)
 y <- rnorm(100) + x[,1] * x[,2] * 0.5 - x[,3] * x[,4] * 0.5
 
 ## require that each interaction be in the top 200 ints 95\% of the 15 splits
-ints <- cv_intscreen(x, y, k = 200, nsplits = 15, fraction.in.thresh = 0.95)
+ints <- cv_intscreen(x, y, nints = 200, nsplits = 15, fraction.in.thresh = 0.95)
 
 ints$int_idx
 
 ## require that each interaction be in the top 50 ints 100\% of the 15 splits
-ints <- cv_intscreen(x, y, k = 50, nsplits = 15, fraction.in.thresh = 1)
+ints <- cv_intscreen(x, y, nints = 50, nsplits = 15, fraction.in.thresh = 1)
 
 ints$int_idx
 }

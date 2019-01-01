@@ -2,22 +2,22 @@
 #' filters top interactions using correlation matrix
 #' @description This function filters top interactions using correlation matrix
 #' @param cormat correlation matrix returned by \code{\link[intscreen]{compute_cors}}
-#' @param k integer number of top interactions to screen
+#' @param nints integer number of top interactions to screen
 #' @seealso \code{\link[intscreen]{compute_cors}}, \code{\link[intscreen]{construct_ints}}, and \code{\link[intscreen]{intscreen}}
 #' @export
-filter_top <- function(cormat, k = 50)
+filter_top <- function(cormat, nints = 50)
 {
     corvals <- cormat[upper.tri(cormat)]
     corvals <- corvals[(!is.na(corvals))]
     corvals <- abs(corvals[(!is.nan(corvals))])
 
     num_ints <- length(corvals)
-    if (any(k > num_ints))
+    if (any(nints > num_ints))
     {
-        stop("k is larger than the number of total interactions. choose a smaller number")
+        stop("nints is larger than the number of total interactions. choose a smaller number")
     }
 
-    quantval <- quantile(corvals, probs = 1 - k / num_ints)
+    quantval <- quantile(corvals, probs = 1 - nints / num_ints)
 
     top_ints <- which(abs(cormat) >= quantval - 1e-12, arr.ind = TRUE)
 
@@ -48,7 +48,7 @@ compute_cors <- function(x, y, modifier = NULL)
 #' constructs selected interactions
 #' @description This function constructs interaction terms
 #' @param x matrix of predictors
-#' @param top_ints k x 2 integer matrix of interaction terms
+#' @param top_ints \code{nints} x 2 integer matrix of interaction terms
 #' @param modifier effect modifier
 #' @seealso \code{\link[intscreen]{filter_top}}, \code{\link[intscreen]{compute_cors}}, and \code{\link[intscreen]{intscreen}}
 #' @export
@@ -59,7 +59,7 @@ compute_cors <- function(x, y, modifier = NULL)
 #'
 #' cormat <- compute_cors(x, y)
 #'
-#' int_idx <- filter_top(cormat, k = 50)
+#' int_idx <- filter_top(cormat, nints = 50)
 #'
 #' int_mat <- construct_ints(x, ints)
 construct_ints <- function(x, top_ints, modifier = NULL)
@@ -101,7 +101,7 @@ construct_ints <- function(x, top_ints, modifier = NULL)
 #' @description This function does all computations for interaction screening
 #' @param x matrix of predictors
 #' @param y vector of observations
-#' @param k integer number of top interactions to screen
+#' @param nints integer number of top interactions to screen
 #' @param modifier effect modifier
 #' @export
 #' @examples
@@ -109,14 +109,14 @@ construct_ints <- function(x, top_ints, modifier = NULL)
 #' x <- matrix(rnorm(1000 * 500), ncol = 500)
 #' y <- rnorm(1000)
 #'
-#' ints <- intscreen(x, y, k = 12)
+#' ints <- intscreen(x, y, nints = 12)
 #'
 #' str(ints)
-intscreen <- function(x, y, k = 10, modifier = NULL)
+intscreen <- function(x, y, nints = 10, modifier = NULL)
 {
     cormat <- compute_cors(x, y, modifier)
 
-    int_idx <- filter_top(cormat, k = k)
+    int_idx <- filter_top(cormat, nints = nints)
 
     int_mat <- construct_ints(x, int_idx, modifier = modifier)
 
@@ -128,7 +128,7 @@ intscreen <- function(x, y, k = 10, modifier = NULL)
 #' @description This function implements CV interaction screening
 #' @param x matrix of predictors
 #' @param y vector of observations
-#' @param k integer number of top interactions to screen
+#' @param nints integer number of top interactions to screen
 #' @param nsplits integer number of cross validation splits to run. defaults to 10
 #' @param train.frac fraction of data used for each split. defaults to 0.75
 #' @param fraction.in.thresh fraction of times across the \code{nsplits} CV splits each
@@ -143,15 +143,15 @@ intscreen <- function(x, y, k = 10, modifier = NULL)
 #' y <- rnorm(100) + x[,1] * x[,2] * 0.5 - x[,3] * x[,4] * 0.5
 #'
 #' ## require that each interaction be in the top 200 ints 95% of the 15 splits
-#' ints <- cv_intscreen(x, y, k = 200, nsplits = 15, fraction.in.thresh = 0.95)
+#' ints <- cv_intscreen(x, y, nints = 200, nsplits = 15, fraction.in.thresh = 0.95)
 #'
 #' ints$int_idx
 #'
 #' ## require that each interaction be in the top 50 ints 100% of the 15 splits
-#' ints <- cv_intscreen(x, y, k = 50, nsplits = 15, fraction.in.thresh = 1)
+#' ints <- cv_intscreen(x, y, nints = 50, nsplits = 15, fraction.in.thresh = 1)
 #'
 #' ints$int_idx
-cv_intscreen <- function(x, y, k = 100, nsplits = 10, train.frac = 0.75, fraction.in.thresh = 1,
+cv_intscreen <- function(x, y, nints = 100, nsplits = 10, train.frac = 0.75, fraction.in.thresh = 1,
                          verbose = FALSE, modifier = NULL)
 {
     intlist <- vector(mode = "list", length = nsplits)
@@ -170,7 +170,7 @@ cv_intscreen <- function(x, y, k = 100, nsplits = 10, train.frac = 0.75, fractio
             cormat  <- compute_cors(x[s_idx,,drop=FALSE], y[s_idx], modifier[s_idx])
         }
 
-        intlist[[s]] <- filter_top(cormat, k = k)
+        intlist[[s]] <- filter_top(cormat, nints = nints)
         if (verbose)
         {
             cat("Split number:", s, "\n")
