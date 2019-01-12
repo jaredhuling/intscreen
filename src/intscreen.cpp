@@ -99,6 +99,7 @@ Eigen::MatrixXd compute_cors_subset_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
 }
 
 
+
 //[[Rcpp::export]]
 Eigen::MatrixXd compute_cors_mod_cpp(const Eigen::Map<Eigen::MatrixXd> & X,
                                      const Eigen::Map<Eigen::VectorXd> & Y,

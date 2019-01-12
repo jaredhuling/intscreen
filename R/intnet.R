@@ -6,6 +6,9 @@
 #' @param y vector of observations
 #' @param which.cols integer vector indicating which columns of \code{x} to check for interactions
 #' @param nints integer number of top interactions to screen
+#' @param resampletype either \code{"cv"} for cross validation or \code{"bootstrap"} for
+#' bootstrap approach
+#' @param heredity either \code{"weak"}, \code{"strong"}, or \code{"none"}
 #' @param nsplits integer number of cross validation splits to run. defaults to 10
 #' @param train.frac fraction of data used for each split. defaults to 0.75
 #' @param fraction.in.thresh fraction of times across the \code{nsplits} CV splits each
@@ -26,13 +29,19 @@
 #'
 #' plot(intmod)
 intnet <- function(x, y, which.cols = 1:ncol(x),
-                   nints = 100, nsplits = 10,
+                   nints = 100,
+                   heredity = c("none", "weak", "strong"),
+                   resampletype = c("cv", "bootstrap"),
+                   nsplits = 10,
                    train.frac = 0.75, fraction.in.thresh = 1,
                    verbose = FALSE,
                    modifier = NULL,
                    ...)
 {
-    cnames <- colnames(x)
+    heredity     <- match.arg(heredity)
+    resampletype <- match.arg(resampletype)
+
+    cnames   <- colnames(x)
 
     if (is.null(cnames))
     {
@@ -65,11 +74,19 @@ intnet <- function(x, y, which.cols = 1:ncol(x),
 
     ints <- cv_intscreen(x = x[,which.cols,drop=FALSE], y = y, nints = nints,
                          nsplits = nsplits, train.frac = train.frac,
-                         fraction.in.thresh = fraction.in.thresh, verbose = FALSE,
+                         fraction.in.thresh = fraction.in.thresh,
+                         resampletype = resampletype,
+                         heredity = heredity,
+                         verbose = FALSE,
                          modifier = modifier)
 
     if (is.null(modifier))
     {
+        if (!is.null(ints$main_effects))
+        {
+            x <- x[,ints$main_effects,drop=FALSE]
+        }
+
         if (!is.null(ints$int_mat))
         {
             x_mm <- cbind(x, ints$int_mat)
@@ -80,6 +97,12 @@ intnet <- function(x, y, which.cols = 1:ncol(x),
         }
     } else
     {
+
+        if (!is.null(ints$main_effects))
+        {
+            x <- x[,ints$main_effects,drop=FALSE]
+        }
+
         if (!is.null(ints$int_mat))
         {
             x_mm <- modifier * cbind(x, ints$int_mat)
@@ -292,9 +315,20 @@ predict.intnet=function(object,newx,s=NULL,type=c("link","response","coefficient
     {
         intmat <- construct_ints(newx, object$ints$int_idx)
 
-        newx <- cbind(newx, intmat)
+        if (!is.null(object$ints$main_effects))
+        {
+            newx <- cbind(newx[,object$ints$main_effects,drop=FALSE], intmat)
+        } else
+        {
+            newx <- cbind(newx, intmat)
+        }
+    } else
+    {
+        if (!is.null(object$ints$main_effects))
+        {
+            newx <- newx[,object$ints$main_effects,drop=FALSE]
+        }
     }
-
 
     nfit=as.matrix(cbind2(1,newx)%*%nbeta)
     if(object$offset){

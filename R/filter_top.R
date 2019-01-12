@@ -219,6 +219,8 @@ intscreen <- function(x, y, nints = 10,
 #' @param train.frac fraction of data used for each split. defaults to 0.75
 #' @param fraction.in.thresh fraction of times across the \code{nsplits} CV splits each
 #' interaction is required in the top \code{k} interactions in order to be selected
+#' @param resampletype either \code{"cv"} for cross validation or \code{"bootstrap"} for
+#' bootstrap approach
 #' @param heredity either \code{"weak"}, \code{"strong"}, or \code{"none"}
 #' @param verbose logical value, whether to print progress of the CV splitting
 #' @param modifier effect modifier
@@ -239,25 +241,35 @@ intscreen <- function(x, y, nints = 10,
 #'
 #' ints$int_idx
 cv_intscreen <- function(x, y, nints = 100, nsplits = 10, train.frac = 0.75, fraction.in.thresh = 1,
+                         resampletype = c("cv", "bootstrap"),
                          heredity = c("none", "weak", "strong"),
                          verbose = FALSE, modifier = NULL)
 {
-    heredity <- match.arg(heredity)
+    heredity     <- match.arg(heredity)
+    resampletype <- match.arg(resampletype)
 
-    intlist <- vector(mode = "list", length = nsplits)
+    intlist <- melist <- vector(mode = "list", length = nsplits)
 
     n <- nrow(x)
 
     for (s in 1:nsplits)
     {
-        s_idx   <- sample.int(n, floor(n * train.frac))
+        if (resampletype == "cv")
+        {
+            s_idx     <- sample.int(n, floor(n * train.frac))
+        } else
+        {
+            s_idx     <- sample.int(n, n, replace = TRUE)
+        }
 
+        corxy     <- drop(cor(y[s_idx], x[s_idx,,drop=FALSE]))
+        nints_1   <- min(nints, ncol(x))
+        top_nints <- order(abs(corxy), decreasing = TRUE)[1:nints_1]
+
+        melist[[s]] <- top_nints
 
         if (heredity == "strong")
         {
-            corxy     <- drop(cor(y[s_idx], x[s_idx,,drop=FALSE]))
-            nints_1 <- min(nints, ncol(x))
-            top_nints <- order(abs(corxy), decreasing = TRUE)[1:nints_1]
 
             if (is.null(modifier))
             {
@@ -273,9 +285,6 @@ cv_intscreen <- function(x, y, nints = 100, nsplits = 10, train.frac = 0.75, fra
 
         } else if (heredity == "weak")
         {
-            corxy     <- drop(cor(y[s_idx], x[s_idx,,drop=FALSE]))
-            nints_1   <- min(nints, ncol(x))
-            top_nints <- order(abs(corxy), decreasing = TRUE)[1:nints_1]
 
             non_top_nints  <- (1:ncol(x))[-top_nints]
             reordered_cols <- c(top_nints, non_top_nints)
@@ -328,7 +337,15 @@ cv_intscreen <- function(x, y, nints = 100, nsplits = 10, train.frac = 0.75, fra
 
     tab <- table(all_ints)
 
-    ints_all_in <- tab[tab >= fraction.in.thresh * nsplits ]
+    ints_all_in <- tab[tab >= fraction.in.thresh * nsplits]
+
+
+    me_all <- unlist(melist)
+    tab    <- table(me_all)
+
+    me_all_in <- tab[tab >= fraction.in.thresh * nsplits]
+
+    me_all_in <- as.integer(names(me_all_in))
 
     if (length(ints_all_in) == 0)
     {
@@ -345,7 +362,12 @@ cv_intscreen <- function(x, y, nints = 100, nsplits = 10, train.frac = 0.75, fra
         int_mat <- construct_ints(x, int_idx_final, modifier = modifier)
     }
 
-    list(int_mat = int_mat, int_idx = int_idx_final)
+    if (length(me_all_in) == 0)
+    {
+        me_all_in <- NULL
+    }
+
+    list(int_mat = int_mat, int_idx = int_idx_final, main_effects = me_all_in)
 }
 
 

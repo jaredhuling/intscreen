@@ -4,9 +4,10 @@
 \alias{intnet}
 \title{Cross validation interaction screening}
 \usage{
-intnet(x, y, which.cols = 1:ncol(x), nints = 100, nsplits = 10,
-  train.frac = 0.75, fraction.in.thresh = 1, verbose = FALSE,
-  modifier = NULL, ...)
+intnet(x, y, which.cols = 1:ncol(x), nints = 100,
+  heredity = c("none", "weak", "strong"), resampletype = c("cv",
+  "bootstrap"), nsplits = 10, train.frac = 0.75,
+  fraction.in.thresh = 1, verbose = FALSE, modifier = NULL, ...)
 }
 \arguments{
 \item{x}{matrix of predictors}
@@ -16,6 +17,11 @@ intnet(x, y, which.cols = 1:ncol(x), nints = 100, nsplits = 10,
 \item{which.cols}{integer vector indicating which columns of \code{x} to check for interactions}
 
 \item{nints}{integer number of top interactions to screen}
+
+\item{heredity}{either \code{"weak"}, \code{"strong"}, or \code{"none"}}
+
+\item{resampletype}{either \code{"cv"} for cross validation or \code{"bootstrap"} for
+bootstrap approach}
 
 \item{nsplits}{integer number of cross validation splits to run. defaults to 10}
 
