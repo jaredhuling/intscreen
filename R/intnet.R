@@ -6,11 +6,12 @@
 #' @param y vector of observations
 #' @param which.cols integer vector indicating which columns of \code{x} to check for interactions
 #' @param nints integer number of top interactions to screen
-#' @param resampletype either \code{"cv"} for cross validation or \code{"bootstrap"} for
+#' @param resample.type either \code{"cv"} for cross validation or \code{"bootstrap"} for
 #' bootstrap approach
 #' @param heredity either \code{"weak"}, \code{"strong"}, or \code{"none"}
 #' @param nsplits integer number of cross validation splits to run. defaults to 10
-#' @param train.frac fraction of data used for each split. defaults to 0.75
+#' @param train.frac fraction of data used for each split. defaults to 0.75. Only
+#' used for \code{resample.type = "cv"}
 #' @param fraction.in.thresh fraction of times across the \code{nsplits} CV splits each
 #' interaction is required in the top \code{nints} interactions in order to be selected
 #' @param modifier effect modifier

@@ -18,7 +18,8 @@ cv_intscreen(x, y, nints = 100, nsplits = 10, train.frac = 0.75,
 
 \item{nsplits}{integer number of cross validation splits to run. defaults to 10}
 
-\item{train.frac}{fraction of data used for each split. defaults to 0.75}
+\item{train.frac}{fraction of data used for each split. defaults to 0.75. Only
+used for \code{resample.type = "cv"}}
 
 \item{fraction.in.thresh}{fraction of times across the \code{nsplits} CV splits each
 interaction is required in the top \code{k} interactions in order to be selected}

@@ -21,9 +21,13 @@ intnet(x, y, which.cols = 1:ncol(x), nints = 100,
 
 \item{heredity}{either \code{"weak"}, \code{"strong"}, or \code{"none"}}
 
+\item{resample.type}{either \code{"cv"} for cross validation or \code{"bootstrap"} for
+bootstrap approach}
+
 \item{nsplits}{integer number of cross validation splits to run. defaults to 10}
 
-\item{train.frac}{fraction of data used for each split. defaults to 0.75}
+\item{train.frac}{fraction of data used for each split. defaults to 0.75. Only
+used for \code{resample.type = "cv"}}
 
 \item{fraction.in.thresh}{fraction of times across the \code{nsplits} CV splits each
 interaction is required in the top \code{nints} interactions in order to be selected}
@@ -31,9 +35,6 @@ interaction is required in the top \code{nints} interactions in order to be sele
 \item{modifier}{effect modifier}
 
 \item{...}{arguments to be passed to \code{\link[glmnet]{glmnet}}}
-
-\item{resampletype}{either \code{"cv"} for cross validation or \code{"bootstrap"} for
-bootstrap approach}
 }
 \description{
 This function implements CV interaction screening
