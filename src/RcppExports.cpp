@@ -18,6 +18,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// compute_cors_subset_cpp
+Eigen::MatrixXd compute_cors_subset_cpp(const Eigen::Map<Eigen::MatrixXd>& X, const Eigen::Map<Eigen::VectorXd>& Y, const Eigen::Map<Eigen::VectorXi>& idx1, const Eigen::Map<Eigen::VectorXi>& idx2);
+RcppExport SEXP _intscreen_compute_cors_subset_cpp(SEXP XSEXP, SEXP YSEXP, SEXP idx1SEXP, SEXP idx2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::MatrixXd>& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXd>& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXi>& >::type idx1(idx1SEXP);
+    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXi>& >::type idx2(idx2SEXP);
+    rcpp_result_gen = Rcpp::wrap(compute_cors_subset_cpp(X, Y, idx1, idx2));
+    return rcpp_result_gen;
+END_RCPP
+}
 // compute_cors_mod_cpp
 Eigen::MatrixXd compute_cors_mod_cpp(const Eigen::Map<Eigen::MatrixXd>& X, const Eigen::Map<Eigen::VectorXd>& Y, const Eigen::Map<Eigen::VectorXd>& mod);
 RcppExport SEXP _intscreen_compute_cors_mod_cpp(SEXP XSEXP, SEXP YSEXP, SEXP modSEXP) {
@@ -28,6 +42,21 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXd>& >::type Y(YSEXP);
     Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXd>& >::type mod(modSEXP);
     rcpp_result_gen = Rcpp::wrap(compute_cors_mod_cpp(X, Y, mod));
+    return rcpp_result_gen;
+END_RCPP
+}
+// compute_cors_subset_mod_cpp
+Eigen::MatrixXd compute_cors_subset_mod_cpp(const Eigen::Map<Eigen::MatrixXd>& X, const Eigen::Map<Eigen::VectorXd>& Y, const Eigen::Map<Eigen::VectorXd>& mod, const Eigen::Map<Eigen::VectorXi>& idx1, const Eigen::Map<Eigen::VectorXi>& idx2);
+RcppExport SEXP _intscreen_compute_cors_subset_mod_cpp(SEXP XSEXP, SEXP YSEXP, SEXP modSEXP, SEXP idx1SEXP, SEXP idx2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::MatrixXd>& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXd>& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXd>& >::type mod(modSEXP);
+    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXi>& >::type idx1(idx1SEXP);
+    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXi>& >::type idx2(idx2SEXP);
+    rcpp_result_gen = Rcpp::wrap(compute_cors_subset_mod_cpp(X, Y, mod, idx1, idx2));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -46,7 +75,9 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_intscreen_compute_cors_cpp", (DL_FUNC) &_intscreen_compute_cors_cpp, 2},
+    {"_intscreen_compute_cors_subset_cpp", (DL_FUNC) &_intscreen_compute_cors_subset_cpp, 4},
     {"_intscreen_compute_cors_mod_cpp", (DL_FUNC) &_intscreen_compute_cors_mod_cpp, 3},
+    {"_intscreen_compute_cors_subset_mod_cpp", (DL_FUNC) &_intscreen_compute_cors_subset_mod_cpp, 5},
     {"_intscreen_construct_ints_cpp", (DL_FUNC) &_intscreen_construct_ints_cpp, 2},
     {NULL, NULL, 0}
 };

@@ -7,7 +7,7 @@
 #' @export
 filter_top <- function(cormat, nints = 50)
 {
-    corvals <- cormat[upper.tri(cormat)]
+    corvals <- cormat[upper.tri(cormat, diag = TRUE)]
     corvals <- corvals[(!is.na(corvals))]
     corvals <- abs(corvals[(!is.nan(corvals))])
 
@@ -30,16 +30,60 @@ filter_top <- function(cormat, nints = 50)
 #' @param x matrix of predictors
 #' @param y vector of observations
 #' @param modifier effect modifier
+#' @param subset1
+#' @param subset2
 #' @seealso \code{\link[intscreen]{filter_top}}, \code{\link[intscreen]{construct_ints}}, and \code{\link[intscreen]{intscreen}}
 #' @export
-compute_cors <- function(x, y, modifier = NULL)
+compute_cors <- function(x, y, modifier = NULL, subset1 = NULL, subset2 = NULL)
 {
-    if (is.null(modifier))
+    if (is.null(subset1) & is.null(subset2))
     {
-        return(compute_cors_cpp(X = x, Y = scale(y)))
-    } else
+        if (is.null(modifier))
+        {
+            return(compute_cors_cpp(X = x, Y = scale(y)))
+        } else
+        {
+            return(compute_cors_mod_cpp(X = x, Y = scale(y), mod = modifier))
+        }
+    } else if (is.null(subset1) & !is.null(subset2))
     {
-        return(compute_cors_mod_cpp(X = x, Y = scale(y), mod = modifier))
+        subset1 <- as.integer(subset2)
+        subset2 <- as.integer(1:ncol(x))
+        if (is.null(modifier))
+        {
+            return(compute_cors_subset_cpp(X = x, Y = scale(y),
+                                           idx1 = subset1, idx2 = subset2))
+        } else
+        {
+            return(compute_cors_subset_mod_cpp(X = x, Y = scale(y), mod = modifier,
+                                               idx1 = subset1, idx2 = subset2))
+        }
+    } else if (!is.null(subset1) & is.null(subset2))
+    {
+        subset2 <- as.integer(1:ncol(x))
+        subset1 <- as.integer(subset1)
+        if (is.null(modifier))
+        {
+            return(compute_cors_subset_cpp(X = x, Y = scale(y),
+                                           idx1 = subset1, idx2 = subset2))
+        } else
+        {
+            return(compute_cors_subset_mod_cpp(X = x, Y = scale(y), mod = modifier,
+                                               idx1 = subset1, idx2 = subset2))
+        }
+    } else (!is.null(subset1) & !is.null(subset2))
+    {
+        subset1 <- as.integer(subset1)
+        subset2 <- as.integer(subset2)
+        if (is.null(modifier))
+        {
+            return(compute_cors_subset_cpp(X = x, Y = scale(y),
+                                           idx1 = subset1, idx2 = subset2))
+        } else
+        {
+            return(compute_cors_subset_mod_cpp(X = x, Y = scale(y), mod = modifier,
+                                               idx1 = subset1, idx2 = subset2))
+        }
     }
 }
 
@@ -102,6 +146,7 @@ construct_ints <- function(x, top_ints, modifier = NULL)
 #' @param x matrix of predictors
 #' @param y vector of observations
 #' @param nints integer number of top interactions to screen
+#' @param heredity either \code{"weak"}, \code{"strong"}, or \code{"none"}
 #' @param modifier effect modifier
 #' @export
 #' @examples
@@ -112,13 +157,54 @@ construct_ints <- function(x, top_ints, modifier = NULL)
 #' ints <- intscreen(x, y, nints = 12)
 #'
 #' str(ints)
-intscreen <- function(x, y, nints = 10, modifier = NULL)
+intscreen <- function(x, y, nints = 10,
+                      heredity = c("none", "weak", "strong"),
+                      modifier = NULL)
 {
-    cormat <- compute_cors(x, y, modifier)
+    heredity <- match.arg(heredity)
 
-    int_idx <- filter_top(cormat, nints = nints)
+    if (heredity == "strong")
+    {
+        corxy     <- drop(cor(y, x))
+        nints_1 <- min(nints, ncol(x))
+        top_nints <- order(abs(corxy), decreasing = TRUE)[1:nints_1]
 
-    int_mat <- construct_ints(x, int_idx, modifier = modifier)
+        cormat    <- compute_cors(x[,top_nints,drop=FALSE], y, modifier)
+
+        int_idx_top <- filter_top(cormat, nints = nints)
+
+        int_idx <- cbind(top_nints[int_idx_top[,1]], top_nints[int_idx_top[,2]])
+
+        int_mat <- construct_ints(x, int_idx, modifier = modifier)
+
+    } else if (heredity == "weak")
+    {
+        corxy     <- drop(cor(y, x))
+
+        nints_1 <- min(nints, ncol(x))
+        top_nints <- order(abs(corxy), decreasing = TRUE)[1:nints_1]
+
+        non_top_nints  <- (1:ncol(x))[-top_nints]
+        reordered_cols <- c(top_nints, non_top_nints)
+
+        cormat    <- compute_cors(x, y, modifier,
+                                  subset1 = top_nints,
+                                  subset2 = reordered_cols)
+
+        int_idx_top <- filter_top(cormat, nints = nints)
+
+        int_idx <- cbind(top_nints[int_idx_top[,1]],
+                         reordered_cols[int_idx_top[,2]])
+
+        int_mat <- construct_ints(x, int_idx, modifier = modifier)
+    } else if (heredity == "none")
+    {
+        cormat <- compute_cors(x, y, modifier)
+
+        int_idx <- filter_top(cormat, nints = nints)
+
+        int_mat <- construct_ints(x, int_idx, modifier = modifier)
+    }
 
     list(int_mat = int_mat, int_idx = int_idx)
 }
@@ -133,6 +219,7 @@ intscreen <- function(x, y, nints = 10, modifier = NULL)
 #' @param train.frac fraction of data used for each split. defaults to 0.75
 #' @param fraction.in.thresh fraction of times across the \code{nsplits} CV splits each
 #' interaction is required in the top \code{k} interactions in order to be selected
+#' @param heredity either \code{"weak"}, \code{"strong"}, or \code{"none"}
 #' @param verbose logical value, whether to print progress of the CV splitting
 #' @param modifier effect modifier
 #' @export
@@ -152,8 +239,11 @@ intscreen <- function(x, y, nints = 10, modifier = NULL)
 #'
 #' ints$int_idx
 cv_intscreen <- function(x, y, nints = 100, nsplits = 10, train.frac = 0.75, fraction.in.thresh = 1,
+                         heredity = c("none", "weak", "strong"),
                          verbose = FALSE, modifier = NULL)
 {
+    heredity <- match.arg(heredity)
+
     intlist <- vector(mode = "list", length = nsplits)
 
     n <- nrow(x)
@@ -162,15 +252,67 @@ cv_intscreen <- function(x, y, nints = 100, nsplits = 10, train.frac = 0.75, fra
     {
         s_idx   <- sample.int(n, floor(n * train.frac))
 
-        if (is.null(modifier))
+
+        if (heredity == "strong")
         {
-            cormat  <- compute_cors(x[s_idx,,drop=FALSE], y[s_idx])
-        } else
+            corxy     <- drop(cor(y[s_idx], x[s_idx,,drop=FALSE]))
+            nints_1 <- min(nints, ncol(x))
+            top_nints <- order(abs(corxy), decreasing = TRUE)[1:nints_1]
+
+            if (is.null(modifier))
+            {
+                cormat <- compute_cors(x[s_idx,top_nints,drop=FALSE], y[s_idx])
+            } else
+            {
+                cormat <- compute_cors(x[s_idx,top_nints,drop=FALSE], y[s_idx], modifier[s_idx])
+            }
+
+            int_idx_top  <- filter_top(cormat, nints = nints)
+
+            intlist[[s]] <- cbind(top_nints[int_idx_top[,1]], top_nints[int_idx_top[,2]])
+
+        } else if (heredity == "weak")
         {
-            cormat  <- compute_cors(x[s_idx,,drop=FALSE], y[s_idx], modifier[s_idx])
+            corxy     <- drop(cor(y[s_idx], x[s_idx,,drop=FALSE]))
+            nints_1   <- min(nints, ncol(x))
+            top_nints <- order(abs(corxy), decreasing = TRUE)[1:nints_1]
+
+            non_top_nints  <- (1:ncol(x))[-top_nints]
+            reordered_cols <- c(top_nints, non_top_nints)
+
+            if (is.null(modifier))
+            {
+                cormat    <- compute_cors(x[s_idx,,drop=FALSE],
+                                          y[s_idx],
+                                          subset1 = top_nints,
+                                          subset2 = reordered_cols)
+            } else
+            {
+                cormat    <- compute_cors(x[s_idx,,drop=FALSE],
+                                          y[s_idx],
+                                          modifier[s_idx],
+                                          subset1 = top_nints,
+                                          subset2 = reordered_cols)
+            }
+
+            int_idx_top <- filter_top(cormat, nints = nints)
+
+            intlist[[s]] <- cbind(top_nints[int_idx_top[,1]],
+                                  reordered_cols[int_idx_top[,2]])
+        } else if (heredity == "none")
+        {
+            if (is.null(modifier))
+            {
+                cormat  <- compute_cors(x[s_idx,,drop=FALSE], y[s_idx])
+            } else
+            {
+                cormat  <- compute_cors(x[s_idx,,drop=FALSE], y[s_idx], modifier[s_idx])
+            }
+
+            intlist[[s]] <- filter_top(cormat, nints = nints)
         }
 
-        intlist[[s]] <- filter_top(cormat, nints = nints)
+
         if (verbose)
         {
             cat("Split number:", s, "\n")

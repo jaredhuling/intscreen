@@ -75,6 +75,8 @@ This function implements CV interaction screening
 }
 \examples{
 
+library(intscreen)
+
 set.seed(1)
 x <- matrix(rnorm(100 * 350), ncol = 350)
 y <- rnorm(100) + x[,1] * x[,2] * 0.5 - x[,3] * x[,4] * 0.5

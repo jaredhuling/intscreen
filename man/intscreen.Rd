@@ -4,7 +4,8 @@
 \alias{intscreen}
 \title{all computations for interaction screening}
 \usage{
-intscreen(x, y, nints = 10, modifier = NULL)
+intscreen(x, y, nints = 10, heredity = c("none", "weak", "strong"),
+  modifier = NULL)
 }
 \arguments{
 \item{x}{matrix of predictors}
@@ -12,6 +13,8 @@ intscreen(x, y, nints = 10, modifier = NULL)
 \item{y}{vector of observations}
 
 \item{nints}{integer number of top interactions to screen}
+
+\item{heredity}{either \code{"weak"}, \code{"strong"}, or \code{"none"}}
 
 \item{modifier}{effect modifier}
 }

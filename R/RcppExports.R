@@ -5,8 +5,16 @@ compute_cors_cpp <- function(X, Y) {
     .Call(`_intscreen_compute_cors_cpp`, X, Y)
 }
 
+compute_cors_subset_cpp <- function(X, Y, idx1, idx2) {
+    .Call(`_intscreen_compute_cors_subset_cpp`, X, Y, idx1, idx2)
+}
+
 compute_cors_mod_cpp <- function(X, Y, mod) {
     .Call(`_intscreen_compute_cors_mod_cpp`, X, Y, mod)
+}
+
+compute_cors_subset_mod_cpp <- function(X, Y, mod, idx1, idx2) {
+    .Call(`_intscreen_compute_cors_subset_mod_cpp`, X, Y, mod, idx1, idx2)
 }
 
 construct_ints_cpp <- function(X, whichints) {

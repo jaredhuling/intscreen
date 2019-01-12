@@ -14,6 +14,7 @@
 #' @param ... arguments to be passed to \code{\link[glmnet]{glmnet}}
 #' @export
 #' @examples
+#' library(intnet)
 #'
 #' set.seed(1)
 #' x <- matrix(rnorm(100 * 350), ncol = 350)
@@ -105,6 +106,8 @@ intnet <- function(x, y, which.cols = 1:ncol(x),
 #' @export
 #' @import glmnet
 #' @examples
+#'
+#' library(intscreen)
 #'
 #' set.seed(1)
 #' x <- matrix(rnorm(100 * 350), ncol = 350)

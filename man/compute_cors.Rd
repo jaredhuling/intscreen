@@ -4,7 +4,7 @@
 \alias{compute_cors}
 \title{computes unscaled correlation matrix}
 \usage{
-compute_cors(x, y, modifier = NULL)
+compute_cors(x, y, modifier = NULL, subset1 = NULL, subset2 = NULL)
 }
 \arguments{
 \item{x}{matrix of predictors}

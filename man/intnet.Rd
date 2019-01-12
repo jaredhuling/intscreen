@@ -32,6 +32,7 @@ interaction is required in the top \code{nints} interactions in order to be sele
 This function implements CV interaction screening
 }
 \examples{
+library(intnet)
 
 set.seed(1)
 x <- matrix(rnorm(100 * 350), ncol = 350)
