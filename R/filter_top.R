@@ -21,6 +21,10 @@ filter_top <- function(cormat, nints = 50)
 
     top_ints <- which(abs(cormat) >= quantval - 1e-12, arr.ind = TRUE)
 
+    # re-order if necessary
+    any_wrongorder <- top_ints[,1] > top_ints[,2]
+    top_ints[any_wrongorder,] <- top_ints[any_wrongorder,c(2,1)]
+
     top_ints
 }
 
@@ -333,6 +337,10 @@ cv_intscreen <- function(x, y, nints = 100, nsplits = 10, train.frac = 0.75, fra
     ## is always less than the second index, so we don't need to worry
     ## about ordering of interactions
     int_tall <- do.call(rbind, intlist)
+
+    # re-order if necessary
+    any_wrongorder <- int_tall[,1] > int_tall[,2]
+    int_tall[any_wrongorder,] <- int_tall[any_wrongorder,c(2,1)]
 
     all_ints <- paste(int_tall[,1], int_tall[,2], sep = ":")
 

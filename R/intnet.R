@@ -76,7 +76,7 @@ intnet <- function(x, y, which.cols = 1:ncol(x),
     ints <- cv_intscreen(x = x[,which.cols,drop=FALSE], y = y, nints = nints,
                          nsplits = nsplits, train.frac = train.frac,
                          fraction.in.thresh = fraction.in.thresh,
-                         resampletype = resampletype,
+                         resample.type = resampletype,
                          heredity = heredity,
                          verbose = FALSE,
                          modifier = modifier)
