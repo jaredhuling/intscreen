@@ -5,7 +5,7 @@
 \title{Cross validation interaction screening}
 \usage{
 cv_intscreen(x, y, nints = 100, nsplits = 10, train.frac = 0.75,
-  fraction.in.thresh = 1, resampletype = c("cv", "bootstrap"),
+  fraction.in.thresh = 1, resample.type = c("bootstrap", "cv"),
   heredity = c("none", "weak", "strong"), verbose = FALSE,
   modifier = NULL)
 }
@@ -23,7 +23,7 @@ cv_intscreen(x, y, nints = 100, nsplits = 10, train.frac = 0.75,
 \item{fraction.in.thresh}{fraction of times across the \code{nsplits} CV splits each
 interaction is required in the top \code{k} interactions in order to be selected}
 
-\item{resampletype}{either \code{"cv"} for cross validation or \code{"bootstrap"} for
+\item{resample.type}{either \code{"cv"} for cross validation or \code{"bootstrap"} for
 bootstrap approach}
 
 \item{heredity}{either \code{"weak"}, \code{"strong"}, or \code{"none"}}
@@ -38,16 +38,16 @@ This function implements CV interaction screening
 \examples{
 
 set.seed(1)
-x <- matrix(rnorm(100 * 350), ncol = 350)
-y <- rnorm(100) + x[,1] * x[,2] * 0.5 - x[,3] * x[,4] * 0.5
+x <- matrix(rnorm(150 * 500), ncol = 500)
+y <- rnorm(150) + x[,1] * x[,2] * 0.5 - x[,3] * x[,4] * 0.5
 
-## require that each interaction be in the top 200 ints 95\% of the 15 splits
-ints <- cv_intscreen(x, y, nints = 200, nsplits = 15, fraction.in.thresh = 0.95)
+## require that each interaction be in the top 200 ints 5\% of the 10 splits
+ints <- cv_intscreen(x, y, nints = 200, nsplits = 10, fraction.in.thresh = 0.75)
 
 ints$int_idx
 
-## require that each interaction be in the top 50 ints 100\% of the 15 splits
-ints <- cv_intscreen(x, y, nints = 50, nsplits = 15, fraction.in.thresh = 1)
+## require that each interaction be in the top 50 ints 50\% of the 10 splits
+ints <- cv_intscreen(x, y, nints = 50, nsplits = 10, fraction.in.thresh = 0.5)
 
 ints$int_idx
 }

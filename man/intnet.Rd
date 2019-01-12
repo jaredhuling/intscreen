@@ -5,9 +5,10 @@
 \title{Cross validation interaction screening}
 \usage{
 intnet(x, y, which.cols = 1:ncol(x), nints = 100,
-  heredity = c("none", "weak", "strong"), resampletype = c("cv",
-  "bootstrap"), nsplits = 10, train.frac = 0.75,
-  fraction.in.thresh = 1, verbose = FALSE, modifier = NULL, ...)
+  heredity = c("none", "weak", "strong"),
+  resample.type = c("bootstrap", "cv"), nsplits = 10,
+  train.frac = 0.75, fraction.in.thresh = 1, verbose = FALSE,
+  modifier = NULL, ...)
 }
 \arguments{
 \item{x}{matrix of predictors}
@@ -20,9 +21,6 @@ intnet(x, y, which.cols = 1:ncol(x), nints = 100,
 
 \item{heredity}{either \code{"weak"}, \code{"strong"}, or \code{"none"}}
 
-\item{resampletype}{either \code{"cv"} for cross validation or \code{"bootstrap"} for
-bootstrap approach}
-
 \item{nsplits}{integer number of cross validation splits to run. defaults to 10}
 
 \item{train.frac}{fraction of data used for each split. defaults to 0.75}
@@ -33,6 +31,9 @@ interaction is required in the top \code{nints} interactions in order to be sele
 \item{modifier}{effect modifier}
 
 \item{...}{arguments to be passed to \code{\link[glmnet]{glmnet}}}
+
+\item{resampletype}{either \code{"cv"} for cross validation or \code{"bootstrap"} for
+bootstrap approach}
 }
 \description{
 This function implements CV interaction screening

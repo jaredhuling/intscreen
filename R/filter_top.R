@@ -30,8 +30,8 @@ filter_top <- function(cormat, nints = 50)
 #' @param x matrix of predictors
 #' @param y vector of observations
 #' @param modifier effect modifier
-#' @param subset1
-#' @param subset2
+#' @param subset1 first subset of variable indices
+#' @param subset2 second subset of variable indices
 #' @seealso \code{\link[intscreen]{filter_top}}, \code{\link[intscreen]{construct_ints}}, and \code{\link[intscreen]{intscreen}}
 #' @export
 compute_cors <- function(x, y, modifier = NULL, subset1 = NULL, subset2 = NULL)
@@ -219,7 +219,7 @@ intscreen <- function(x, y, nints = 10,
 #' @param train.frac fraction of data used for each split. defaults to 0.75
 #' @param fraction.in.thresh fraction of times across the \code{nsplits} CV splits each
 #' interaction is required in the top \code{k} interactions in order to be selected
-#' @param resampletype either \code{"cv"} for cross validation or \code{"bootstrap"} for
+#' @param resample.type either \code{"cv"} for cross validation or \code{"bootstrap"} for
 #' bootstrap approach
 #' @param heredity either \code{"weak"}, \code{"strong"}, or \code{"none"}
 #' @param verbose logical value, whether to print progress of the CV splitting
@@ -228,25 +228,25 @@ intscreen <- function(x, y, nints = 10,
 #' @examples
 #'
 #' set.seed(1)
-#' x <- matrix(rnorm(100 * 350), ncol = 350)
-#' y <- rnorm(100) + x[,1] * x[,2] * 0.5 - x[,3] * x[,4] * 0.5
+#' x <- matrix(rnorm(150 * 500), ncol = 500)
+#' y <- rnorm(150) + x[,1] * x[,2] * 0.5 - x[,3] * x[,4] * 0.5
 #'
-#' ## require that each interaction be in the top 200 ints 95% of the 15 splits
-#' ints <- cv_intscreen(x, y, nints = 200, nsplits = 15, fraction.in.thresh = 0.95)
+#' ## require that each interaction be in the top 200 ints 5% of the 10 splits
+#' ints <- cv_intscreen(x, y, nints = 200, nsplits = 10, fraction.in.thresh = 0.75)
 #'
 #' ints$int_idx
 #'
-#' ## require that each interaction be in the top 50 ints 100% of the 15 splits
-#' ints <- cv_intscreen(x, y, nints = 50, nsplits = 15, fraction.in.thresh = 1)
+#' ## require that each interaction be in the top 50 ints 50% of the 10 splits
+#' ints <- cv_intscreen(x, y, nints = 50, nsplits = 10, fraction.in.thresh = 0.5)
 #'
 #' ints$int_idx
 cv_intscreen <- function(x, y, nints = 100, nsplits = 10, train.frac = 0.75, fraction.in.thresh = 1,
-                         resampletype = c("cv", "bootstrap"),
+                         resample.type = c("bootstrap", "cv"),
                          heredity = c("none", "weak", "strong"),
                          verbose = FALSE, modifier = NULL)
 {
     heredity     <- match.arg(heredity)
-    resampletype <- match.arg(resampletype)
+    resampletype <- match.arg(resample.type)
 
     intlist <- melist <- vector(mode = "list", length = nsplits)
 

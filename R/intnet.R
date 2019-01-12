@@ -31,7 +31,7 @@
 intnet <- function(x, y, which.cols = 1:ncol(x),
                    nints = 100,
                    heredity = c("none", "weak", "strong"),
-                   resampletype = c("cv", "bootstrap"),
+                   resample.type = c("bootstrap", "cv"),
                    nsplits = 10,
                    train.frac = 0.75, fraction.in.thresh = 1,
                    verbose = FALSE,
@@ -39,7 +39,7 @@ intnet <- function(x, y, which.cols = 1:ncol(x),
                    ...)
 {
     heredity     <- match.arg(heredity)
-    resampletype <- match.arg(resampletype)
+    resampletype <- match.arg(resample.type)
 
     cnames   <- colnames(x)
 

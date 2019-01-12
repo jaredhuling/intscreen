@@ -12,6 +12,10 @@ compute_cors(x, y, modifier = NULL, subset1 = NULL, subset2 = NULL)
 \item{y}{vector of observations}
 
 \item{modifier}{effect modifier}
+
+\item{subset1}{first subset of variable indices}
+
+\item{subset2}{second subset of variable indices}
 }
 \description{
 This function computes an unscaled correlation matrix
